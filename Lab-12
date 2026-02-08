@@ -1,0 +1,26 @@
+"""day 12 Activity: String & Date Cleaning
+Tasks:
+1) Clean city strings (strip, lower, remove punctuation)
+2) Map synonyms to canonical values
+3) Parse mixed-format timestamps and localize to UTC
+"""
+
+import pandas as pd
+
+# TODO: Load data from data/day12_users.csv
+df = pd.read_csv("C:\\Users\\acer57\\OneDrive\\Desktop\\my web\\python\\day12_users.csv")
+
+# TODO: Implement standardize_city(df)
+canonical_map = {"new york": "new york", "NYC": "new york", "New York": "new york",
+                 "San Francisco!": "san francisco", "san-francisco": "san francisco"}
+df["signup_time"] = pd.to_datetime(df["signup_time"], errors="coerce")
+df["city_token"] = df["city"].str.replace(" ", "", regex=False)
+df["city_canonical"] = df["city_token"].map(canonical_map).fillna(df["city_token"])
+
+# TODO: Implement parse_and_localize(df)
+df["signup_dt_local"] = df["signup_time"].dt.tz_localize("US/Eastern", ambiguous="NaT", nonexistent="NaT")
+df["signup_dt_utc"] = df["signup_dt_local"].dt.tz_convert("UTC")
+
+# TODO: Print cleaned columns for inspection
+print(df.columns)
+print(df[[ "city_token", "city_canonical", "signup_time", "signup_dt_local", "signup_dt_utc"]])
