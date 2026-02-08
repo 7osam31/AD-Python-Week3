@@ -1,0 +1,49 @@
+"""
+Day 14 Activity: Full Cleaning Pipeline
+Tasks:
+1) Build clean_data() that orchestrates type, missing, outliers, strings/dates
+2) Add basic validation checks
+3) Run end-to-end and inspect
+"""
+import pandas as pd
+import numpy as np
+df=pd.read_csv("C:\\Users\\acer57\\OneDrive\\Desktop\\my web\\python\\day14_users_raw.csv")
+# TODO: Implement clean_types(df)
+def clean_types(df: pd.DataFrame) :
+    df=df.copy()
+    for col in df.columns:
+        if col in ["age", "income"]:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
+# TODO: Implement clean_missing(df)
+def clean_missing(df:pd.DataFrame):
+    df=df.copy()
+    df["age"]=df["age"].fillna(df["age"].median())
+    df["income"]=df["income"].fillna(df["income"].median())
+# TODO: Implement handle_outliers(df)\
+def handle_outliers(df:pd.DataFrame):
+    df=df.copy()
+    for col in ["age"]:
+        if 100<col>5:
+            df[col]=df[col].fillna(df[col].median())
+    return df
+# TODO: Implement clean_strings_and_dates(df)
+def clean_str_dt(df:pd.DataFrame):
+    df=df.copy()
+    df["signup_date"]=pd.to_datetime(df["signup_date"], errors="coerce")
+# TODO: Implement validate_cleaned(df)
+def vali_clean(df:pd.DataFrame):
+    assert df["age"].between(5,100).all() 
+    assert (df["income"] >= 0).all()
+    assert df["signup_date"].notna().all() 
+# TODO: Implement clean_data(df) that calls the above in order
+def clean_data(df:pd.DataFrame):
+    df=df.copy()
+    df=clean_types(df)
+    df=clean_missing(df)
+    df=handle_outliers(df)
+    df=clean_str_dt(df)
+    vali_clean(df)
+    return df
+
+print(clean_data(df))
