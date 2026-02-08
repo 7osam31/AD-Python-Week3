@@ -20,7 +20,6 @@ def clean_chunk(df: pd.DataFrame) :
 
 # TODO: Implement process_large_file(path_in, path_out, chunksize)
 
-def clean_chunk(chunk): return chunk.copy()
 
 
 start = time.perf_counter()
