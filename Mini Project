@@ -1,0 +1,50 @@
+"""
+Day 15 Activity: Mini Project — End-to-End Cleaning
+Tasks:
+1) Load raw dataset
+2) Design a cleaning plan (types, missing, outliers, strings, dates)
+3) Implement clean_data_project
+4) Save cleaned dataset
+5) Document decisions
+"""
+
+import pandas as pd
+
+# TODO: Load data from data/day15_real_dataset.csv
+df=pd.read_csv('C:\\Users\\acer57\\OneDrive\\Desktop\\my web\\python\\day15_real_dataset_large.csv')
+# TODO: Implement clean_data_project(df)
+def clean_data_project(df: pd.DataFrame):
+    df = df.copy()
+    # Types
+    df["age"] = pd.to_numeric(df["age"], errors="coerce")
+    df["income"] = pd.to_numeric(df["income"], errors="coerce")
+    df["signup_time"] = pd.to_datetime(df["signup_time"], errors="coerce")
+    # Missing
+    df["age_missing"] = df["age"].isna().astype(int)
+    df["age"] = df["age"].fillna(df["age"].median())
+    df["income_missing"] = df["income"].isna().astype(int)
+    df["income"] = df["income"].fillna(df["income"].median())
+    # Outliers
+    df["income"] = df["income"].clip(upper=df["income"].quantile(0.99))
+    df["age"] = df["age"].clip(upper=df["age"].quantile(0.99))
+    df = df[df["age"] >= 0]  
+    # Strings and dates
+    df["city"] = df["city"].str.strip().str.lower()
+    df["signup_time"] = df["signup_time"].dt.tz_localize("UTC")
+    return df
+
+# TODO: Save cleaned dataset to data/day15_cleaned.csv
+
+cleaning_decisions = {
+    "income_cap_99": "Cap income at 99th percentile to reduce influence of extreme values while keeping all records.",
+    "age_median_imp": "Impute missing age with global median; less sensitive to outliers than mean."
+}
+print("Cleaning decisions:")
+for key,value in cleaning_decisions.items():
+    print(key ,":", value, "\n")
+df_clean = clean_data_project(df)
+print(df_clean.info())
+print(df_clean[["age", "income"]].describe())
+print(df_clean["city"].value_counts().head())
+print(df_clean["signup_time"].dt.tz)
+
